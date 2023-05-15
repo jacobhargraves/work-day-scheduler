@@ -2,13 +2,6 @@
 // the code isn't run until the browser has finished rendering all the elements
 // in the html.
 $(function() {
-  // TODO: Add a listener for click events on the save button. This code should
-  // use the id in the containing time-block as a key to save the user input in
-  // local storage. HINT: What does `this` reference in the click listener
-  // function? How can DOM traversal be used to get the "hour-x" id of the
-  // time-block containing the button that was clicked? How might the id be
-  // useful when saving the description in local storage?
-  //
   // TODO: Add code to apply the past, present, or future class to each time
   // block by comparing the id to the current hour
 
@@ -20,7 +13,7 @@ $(function() {
   // loops through each time block element
     $('.time-block').each(function() {
       // Gets the ID of the current time block
-      const blockId = $(this).attr('id');
+      var blockId = $(this).attr('id');
       
       // Extracts the hour from the ID and reads as an integer
       const blockHour = parseInt(blockId.split('-')[1],10);
@@ -34,12 +27,38 @@ $(function() {
       } else if (blockHour > currentHour) {
         $(this).addClass('future').removeClass('past present');
       }
+
+    // TODO: Add a listener for click events on the save button. This code should
+    // use the id in the containing time-block as a key to save the user input in
+    // local storage. 
+    const saveButton = $(this).find('.saveBtn');
+      
+    // Add click event listener to the save button
+    saveButton.on('click', function() {
+      // Get the description from the corresponding text area
+      const description = $(this).siblings('.description').val();
+
+      // Get the ID of the parent time block
+      const timeBlockId = $(this).closest('.time-block').attr('id');
+
+      // Save the description in local storage with the time block ID as the key
+      localStorage.setItem(timeBlockId, description);
+
+      const localStorageMsg = $('.localStorageMsg');
+
+      localStorageMsg.text('"' + description + '"' + ' added to calendar');
     });
-  //
-  // TODO: Add code to get any user input that was saved in localStorage and set
-  // the values of the corresponding textarea elements. HINT: How can the id
-  // attribute of each time-block be used to do this?
-  //
+
+    // TODO: Add code to get any user input that was saved in localStorage and set
+    // the values of the corresponding textarea elements. HINT: How can the id
+    // attribute of each time-block be used to do this?
+    var blockId = $(this).attr('id');
+    const savedDescription = localStorage.getItem(blockId);
+    if (savedDescription) {
+      $(this).find('.description').val(savedDescription);
+  }
+    });
+
   // TODO: Add code to display the current date in the header of the page.
   setInterval(getDateAndTime, 1000);
   function getDateAndTime() {
